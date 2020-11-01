@@ -42,17 +42,24 @@ void CTcpListener::Run()
 				memset(buf, 0, MAX_BUFFER_SIZE);
 
 				bytesReceived = recv(client, buf, MAX_BUFFER_SIZE, 0);
-				//std::cout << buf << std::endl;
+				
 				if (bytesReceived > 0)
 				{
 					if (MessageReceived != NULL)
 					{
-						if('\n' == buf[strlen(buf)-1]) {
-							buf[strlen(buf)-1] = '\0';
+						/* By default in linux system, when client sends message, two
+						character '\r\n' will be added at the end of the message, this
+						will cause trouble in the main function, i.e. Listener_MessageReceived 
+						function, if we compare the received text with an expected test, i.e., 
+						if(expected_text == msg), even though two texts look the same, the condtion 
+						of the if statement always false, so in the code below we will remove 
+						those two characters */
+						if (buf[strlen(buf)-1] == '\n' && buf[strlen(buf)-2] == '\r') {
+							buf[strlen(buf)-1] = '\0'; // rm '\n'
+							buf[strlen(buf)-1] = '\0'; // rm '\r'
 						}
-						
-                        //std::cout << std::string(buf, 0, bytesReceived) << std::endl;
-						MessageReceived(this, client, std::string(buf, 0, bytesReceived));
+						std::cout << "CLIENT> " << buf << std::endl;
+						MessageReceived(this, client, buf);
 					}
 				}
 

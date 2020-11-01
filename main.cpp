@@ -3,6 +3,7 @@
 
 #include "TcpListener.h"
 #include "Quote.h"
+#include <typeinfo>
 
 using namespace std;
 
@@ -20,11 +21,12 @@ int main()
 
 void Listener_MessageReceived(CTcpListener* listener, int client, string msg)
 {
-    // cout << "msg at main: " << msg << endl;
-    // cout << "msg at main: " << quotes.GetRandomQuote() << endl;
-    cout << "check!" << endl;
-    //if(msg == "Q") {
-    if("Q" == msg) {
+    /* Waring: for linux system, two hidden characters '\r\n' will be added
+    two msg. For example, if client send message : 'Quote', the actual message
+    is 'Quote\r\n'. The msg here in this function has already been stripped down 
+    the two hidden character
+    */
+    if(msg == "Quote") {
         listener->Send(client, quotes.GetRandomQuote());
     }   
 }
